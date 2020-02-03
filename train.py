@@ -23,10 +23,10 @@ parser.add_argument('--epochs', help='Number of epochs',
 parser.add_argument('--batch_size', default=32, type=int,
                     help='Batch size for training')
 
-parser.add_argument('--train', type=str, default='fruits_data/Training',
+parser.add_argument('--train', type=str,
                     help='Rootdir of train data')
 
-parser.add_argument('--val', type=str, default='fruits_data/Test',
+parser.add_argument('--val', type=str,
                     help='Rootdir of val data')
 
 parser.add_argument('--freeze', type=bool, default=True,
@@ -101,6 +101,9 @@ def main():
         print('\nTrain Loss: {:.4f}, Train Acc: {:.2f}'.format(running_loss /
                                                                (j*args.batch_size),
                                                                correct/total))
+        if not args.val:
+            # skip validation
+            continue
 
         # Eval mode
         model.eval()
