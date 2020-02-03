@@ -7,6 +7,7 @@ import torch.optim as optim
 import argparse
 import os
 import sys
+import time
 
 sys.path.insert(0, os.path.abspath('model'))  # nopep8
 from model.simple import FruitNet  # nopep8
@@ -31,6 +32,9 @@ parser.add_argument('--val', type=str, default='fruits_data/Test',
 parser.add_argument('--freeze', type=bool, default=True,
                     help='Freeze Resnet')
 
+parser.add_argument('--save', type=str,
+                    help='Save path')
+
 args = parser.parse_args()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -54,14 +58,16 @@ def main():
 
     # param
     # model = FruitNet(len(train_dataset.classes)).to(device)
-    model = ResFruitNet(len(train_dataset.classes)).to(device)
+    model = ResFruitNet(len(train_dataset.classes),
+                        freeze=args.freeze).to(device)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.0015)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode='min', factor=0.1, patience=4)
-
+    best_loss = 100
     # Train
     print('Start training')
+    t = time.time()
     for epoch in range(args.epochs):
         print('Epoch [{}/{}]:'.format(epoch+1, args.epochs))
         model.train()
@@ -119,8 +125,25 @@ def main():
 
         print('\nVal Loss: {:.4f}, Val Acc: {:.2f}'.format(running_loss / (j*args.batch_size),
                                                            correct/total))
+        if running_loss / (j*args.batch_size) < best_loss:
+            best_loss = running_loss / (j*args.batch_size)
+            state = {
+                'epoch': epoch,
+                'state_dict': model.state_dict()
+            }
+            torch.save(
+                state,
+                os.path.join(
+                    args.save,
+                    "{}_epoch_{}.pth".format(model.name, epoch)
+                )
+            )
+        if (running_loss / (j*args.batch_size)) == 0.00:
+            print('Val loss == 0. Exitting!')
+            break
         # Check val loss
         scheduler.step(running_loss)
+    print('Training finnish. Took {} mins'.format((time.time()-t)/60))
 
 
 if __name__ == '__main__':

@@ -5,7 +5,6 @@ from torch import nn
 class FruitNet(nn.Module):
     def __init__(self, class_num):
         super(FruitNet, self).__init__()
-        self.name = "FruitNet"
         # input size: 100x100x3
         self.conv1 = nn.Conv2d(3, 16, kernel_size=(5, 5))
         self.relu1 = nn.ReLU()

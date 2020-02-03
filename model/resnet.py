@@ -11,6 +11,7 @@ class ResFruitNet(nn.Module):
             freeze: freeze pretrained resnet or not
         """
         super(ResFruitNet, self).__init__()
+        self.name = "ResFruitNet"
         pretrained = models.resnet18(pretrained=True)
         modules = list(pretrained.children())[:-3]
         self.resnet = nn.Sequential(*modules)
