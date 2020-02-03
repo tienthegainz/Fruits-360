@@ -4,8 +4,13 @@ from torchvision.datasets import ImageFolder
 from torchvision import transforms
 from torch.utils.data import DataLoader
 import torch.optim as optim
-from model import FruitNet
 import argparse
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath('model'))  # nopep8
+from model.simple import FruitNet  # nopep8
+from model.resnet import ResFruitNet  # nopep8
 
 parser = argparse.ArgumentParser(
     description='Simple training script ')
@@ -25,6 +30,7 @@ parser.add_argument('--val', type=str, default='fruits_data/Test',
 args = parser.parse_args()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print('Training on {}'.format(device))
 
 
 def main():
@@ -43,7 +49,8 @@ def main():
         val_dataset, batch_size=args.batch_size, shuffle=True)
 
     # param
-    model = FruitNet(len(train_dataset.classes)).to(device)
+    # model = FruitNet(len(train_dataset.classes)).to(device)
+    model = ResFruitNet(len(train_dataset.classes)).to(device)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.0015)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
@@ -60,7 +67,6 @@ def main():
             correct = 0
             total = 0
             for i, (images, labels) in enumerate(train_dataloader):
-                print(".", end='')
                 images = images.to(device)
                 labels = labels.to(device)
                 # print('Image: {} - label: {}'.format(images.shape, labels))
@@ -94,7 +100,6 @@ def main():
             correct = 0
             total = 0
             for i, (images, labels) in enumerate(val_dataloader):
-                print(".", end='')
                 images = images.to(device)
                 labels = labels.to(device)
                 # print('Val:')
