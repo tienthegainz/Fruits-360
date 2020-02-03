@@ -27,6 +27,10 @@ parser.add_argument('--train', type=str, default='fruits_data/Training',
 
 parser.add_argument('--val', type=str, default='fruits_data/Test',
                     help='Rootdir of val data')
+
+parser.add_argument('--freeze', type=bool, default=True
+                    help='Freeze Resnet')
+
 args = parser.parse_args()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
