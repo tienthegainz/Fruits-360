@@ -1,0 +1,4 @@
+# dataset
+*.zip
+fruits_data/
+.vscode/
