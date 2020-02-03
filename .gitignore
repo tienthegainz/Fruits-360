@@ -3,3 +3,4 @@
 fruits_data/
 .vscode/
 __pycache__/
+*.pth

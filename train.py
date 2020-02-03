@@ -125,19 +125,20 @@ def main():
 
         print('\nVal Loss: {:.4f}, Val Acc: {:.2f}'.format(running_loss / (j*args.batch_size),
                                                            correct/total))
-        if running_loss / (j*args.batch_size) < best_loss:
-            best_loss = running_loss / (j*args.batch_size)
-            state = {
-                'epoch': epoch,
-                'state_dict': model.state_dict()
-            }
-            torch.save(
-                state,
-                os.path.join(
-                    args.save,
-                    "{}_epoch_{}.pth".format(model.name, epoch)
+        if args.save:
+            if running_loss / (j*args.batch_size) < best_loss:
+                best_loss = running_loss / (j*args.batch_size)
+                state = {
+                    'epoch': epoch,
+                    'state_dict': model.state_dict()
+                }
+                torch.save(
+                    state,
+                    os.path.join(
+                        args.save,
+                        "{}_epoch_{}.pth".format(model.name, epoch)
+                    )
                 )
-            )
         if (running_loss / (j*args.batch_size)) == 0.00:
             print('Val loss == 0. Exitting!')
             break
